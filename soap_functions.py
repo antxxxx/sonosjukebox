@@ -2,24 +2,30 @@
 import xml.etree.ElementTree as ET
 import httplib
 import socket
+import zlib
 
-def send_soapmessage(SoapMessage, sonos_ip, service):
-  htcon="%s:1400"%(sonos_ip)
-  webservice = httplib.HTTPConnection(htcon)
+def send_soapmessage(SoapMessage, host, service, protocol, soapaction):
+  if protocol == "https" :
+    webservice = httplib.HTTPSConnection(host)
+  else :
+    webservice = httplib.HTTPConnection(host)
   webservice.putrequest("POST", service)
   myip=socket.gethostbyname(socket.gethostname())
   webservice.putheader("Host", myip)
   webservice.putheader("User-Agent", "Python post")
   webservice.putheader("Content-type", "text/xml; charset=\"UTF-8\"")
   webservice.putheader("Content-length", "%d" % len(SoapMessage))
-  root = ET.fromstring(SoapMessage)
-  soapaction=root[0][0].tag
-  soapaction=soapaction.replace('{', '').replace('}', '#')
+  #root = ET.fromstring(SoapMessage)
+  #soapaction=root[1][0].tag
+  #soapaction=soapaction.replace('{', '').replace('}', '#')
   webservice.putheader("SOAPAction", soapaction)
   webservice.endheaders()
   webservice.send(SoapMessage)
   response = webservice.getresponse()
-  SoapResponse = response.read()
+  if (response.getheader('Content-Encoding') == 'gzip') :
+    SoapResponse = zlib.decompress(response.read(), 16+zlib.MAX_WBITS)
+  else :
+    SoapResponse = response.read()
   return SoapResponse
 
 def get_rincon(sonos_ip) :
@@ -33,3 +39,7 @@ def get_rincon(sonos_ip) :
   rincon=device.find('{urn:schemas-upnp-org:device-1-0}UDN').text
   rincon=rincon.replace('uuid:', '') + '#0'
   return rincon
+
+def get_sonos_endpoint(sonos_ip) :
+  sonos_endpoint = "%s:1400" %(sonos_ip)
+  return sonos_endpoint

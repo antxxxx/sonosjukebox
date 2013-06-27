@@ -93,3 +93,53 @@ SEARCH_TEMPLATE = """<?xml version="1.0" encoding="utf-8"?>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 """
+
+SPOTIFY_SEARCH_TEMPLATE = """<?xml version="1.0" encoding="utf-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.sonos.com/Services/1.1">
+   <soapenv:Header>
+     <ns:credentials>
+       <ns:deviceId>%s</ns:deviceId>
+       <ns:deviceProvider>Sonos</ns:deviceProvider>
+       <ns:sessionId>%s</ns:sessionId>
+     </ns:credentials>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns:search>
+        <ns:id>strk</ns:id>
+        <ns:term>%s</ns:term>
+        <ns:index>0</ns:index>
+        <ns:count>10</ns:count>
+      </ns:search>
+   </soapenv:Body>
+</soapenv:Envelope>"""
+
+SPOTIFY_SESSION_ID = """<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Body>
+    <u:GetSessionId xmlns:u="urn:schemas-upnp-org:service:MusicServices:1">
+      <ServiceId>9</ServiceId>
+      <Username>%s</Username>
+    </u:GetSessionId>
+  </s:Body>
+</s:Envelope>"""
+
+DEVICEPROPERTIES_TEMPLATE = """<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Body>
+    <u:GetZoneInfo xmlns:u="urn:schemas-upnp-org:service:DeviceProperties:1" />
+  </s:Body>
+</s:Envelope>"""
+
+
+BROWSE_FAVOURITES_TEMPLATE = """<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <s:Body>
+    <u:Browse xmlns:u="urn:schemas-upnp-org:service:ContentDirectory:1">
+      <ObjectID>FV:2</ObjectID>
+      <BrowseFlag>BrowseDirectChildren</BrowseFlag>
+      <Filter>dc:title,res,dc:creator,upnp:artist,upnp:album,upnp:albumArtURI</Filter>
+      <StartingIndex>0</StartingIndex>
+      <RequestedCount>100</RequestedCount>
+      <SortCriteria></SortCriteria>
+    </u:Browse>
+  </s:Body>
+</s:Envelope>"""

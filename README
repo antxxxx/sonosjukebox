@@ -14,10 +14,12 @@ admin.py
 
 This creates an sqllite database (if it does not exist) that will hold the information needed
 You should change the ip address to match your sonos system and then click update
+You can also enter your spotify username here if you have a spotify account
 
-You can use the search box at the top to search for a track (it only searches track titles) and assign it to a selection. This only searches your sonos library
+You can use the search box at the top to search for a track in your libraru (it only searches track titles) and assign it to a selection. This only searches your sonos library
+If you have a spotify account you can use the 2nd search box to search for a track in spotify and assign it
 
-You can also manually update selections to assign tracks from spotify or radio streams (though this is a bit manual)
+You can also manually update selections to assign tracks from other sources (though this is a bit manual)
 
 To find the details for these kind of selections, you need to capture the traffic between a sonos controller and the sonos system.
 On windows this can be done using wireshark
