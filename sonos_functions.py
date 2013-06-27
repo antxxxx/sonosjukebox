@@ -43,7 +43,13 @@ def enqueue_track(trackinfo):
     # by calling set_source with RINCON
     # set trackno
     # then call play_sonos
-    if (currenturi[0:14]  != 'x-rincon-queue') or (CurrentTransportState != 'PLAYING'):
+    start_playing = 0
+    if currenturi == None :
+      start_playing = 1
+    else :
+      if (currenturi[0:14]  != 'x-rincon-queue') or (CurrentTransportState != 'PLAYING') :
+	start_playing = 1
+    if start_playing == 1 :
       pause_sonos()
       rincon = soap_functions.get_rincon(sonos_info["ip"])
       currenturi='x-rincon-queue:%s' % rincon
