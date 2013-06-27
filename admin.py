@@ -16,6 +16,7 @@ SPOTIFY_DIDL_TEMPLATE = """<DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/
 </DIDL-Lite>"""
 
 def display_search_results(searchresults) :
+  jukebox_info = db_functions.get_jukebox_info()
   print "library search results"
   print "</p><p>"
   print "<table border=1>"
@@ -55,6 +56,7 @@ def display_search_results(searchresults) :
 
 def display_spotify_search_results(spotifysearchresults) :
   sonos_info = db_functions.get_sonos_info()
+  jukebox_info = db_functions.get_jukebox_info()
   print "spotify search results"
   print "</p><p>"
   print "<table border=1>"
@@ -100,6 +102,7 @@ def display_spotify_search_results(spotifysearchresults) :
   print "</table>"
   
 def display_favourites() :
+  jukebox_info = db_functions.get_jukebox_info()
   print "Favourites"
   print "</p><p>"
   print "<table border=1>"
@@ -268,4 +271,4 @@ if (spotifysearchresults is not None) :
   display_spotify_search_results(spotifysearchresults)
 display_sonos_info()
 display_favourites()
-display_jukebox_info(jukebox_info)
+display_jukebox_info()
