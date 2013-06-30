@@ -6,6 +6,7 @@ import db_functions
 import xml.etree.ElementTree as ET
 import HTMLParser
 import sonos_functions
+import urllib
 
 SPOTIFY_DIDL_TEMPLATE = """<DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/" xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">
   <item id="00030000%s" parentID="00030000%s" restricted="true">
@@ -38,9 +39,9 @@ def display_search_results(searchresults) :
     print "<tr>"
     print "<form name='addtrack' action='admin.py' method='post'>"
     print "<input type='hidden' name='action' value='add_track'>" 
-    print "<input type='hidden' name='artist' value='%s'>" % artist 
-    print "<input type='hidden' name='title' value='%s'>" % title
-    print "<input type='hidden' name='uri' value='%s'>" % uri
+    print "<input type='hidden' name='artist' value='%s'>" % (urllib.quote(artist))
+    print "<input type='hidden' name='title' value='%s'>" % (urllib.quote(title))
+    print "<input type='hidden' name='uri' value='%s'>" % (urllib.quote(uri))
     print "<input type='hidden' name='type' value='track'>" 
     print "<td>%s</td>" % repr(artist)
     print "<td>%s</td>" % repr(title)
@@ -84,10 +85,10 @@ def display_spotify_search_results(spotifysearchresults) :
     print "<tr>"
     print "<form name='addtrack' action='admin.py' method='post'>"
     print "<input type='hidden' name='action' value='add_track'>" 
-    print "<input type='hidden' name='artist' value='%s'>" % artist 
-    print "<input type='hidden' name='title' value='%s'>" % title
-    print "<input type='hidden' name='uri' value='%s'>" % uri
-    print "<input type='hidden' name='metadata' value='%s'>" % metadata
+    print "<input type='hidden' name='artist' value='%s'>" % (urllib.quote(artist)) 
+    print "<input type='hidden' name='title' value='%s'>" % (urllib.quote(title))
+    print "<input type='hidden' name='uri' value='%s'>" % (urllib.quote(uri))
+    print "<input type='hidden' name='metadata' value='%s'>" % (urllib.quote(metadata))
     print "<input type='hidden' name='type' value='track'>" 
     print "<td>%s</td>" % repr(artist)
     print "<td>%s</td>" % repr(title)
@@ -124,10 +125,10 @@ def display_favourites() :
     print "<tr>"
     print "<form name='addtrack' action='admin.py' method='post'>"
     print "<input type='hidden' name='action' value='add_track'>" 
-    print "<input type='hidden' name='artist' value='%s'>" % artist 
-    print "<input type='hidden' name='title' value='%s'>" % title
-    print "<input type='hidden' name='uri' value='%s'>" % uri
-    print "<input type='hidden' name='metadata' value='%s'>" % metadata
+    print "<input type='hidden' name='artist' value='%s'>" % (urllib.quote(artist))
+    print "<input type='hidden' name='title' value='%s'>" % (urllib.quote(title))
+    print "<input type='hidden' name='uri' value='%s'>" % (urllib.quote(uri))
+    print "<input type='hidden' name='metadata' value='%s'>" % (urllib.quote(metadata))
     if (protocol == "x-sonosapi-stream:*:*:*") or (protocol == "x-rincon-mp3radio:*:*:*"):
       print "<input type='hidden' name='type' value='stream'>" 
     else :
@@ -237,11 +238,13 @@ action = form.getfirst('action', None)
 if action == 'update_selection' :
   h = HTMLParser.HTMLParser()
   selection = form.getfirst('selection', None)
-  artist = form.getfirst('artist', None)
-  title = form.getfirst('title', None)
-  uri = form.getfirst('uri', None)
+  artist = urllib.unquoute(form.getfirst('artist', None))
+  title = urllib.unqoute(form.getfirst('title', None))
+  uri = urllib.unquote(form.getfirst('uri', None))
   uri=h.unescape(uri)
   metadata = form.getfirst('metadata', None)
+  if metadata != None :
+    metadata = urllib.unquote(metadata)
   metadata=h.unescape(metadata)
   type = form.getfirst('type', None)
   db_functions.updatedb_selection(selection, artist, title, uri, metadata, type)
@@ -256,10 +259,12 @@ elif action == 'search_spotify' :
   track = form.getfirst('track', None)
   spotifysearchresults = sonos_functions.get_spotify_search_results(track)
 elif action == 'add_track' :
-  artist = form.getfirst('artist', None)
-  title = form.getfirst('title', None)
-  uri = form.getfirst('uri', None)
+  artist = urllib.unquote(form.getfirst('artist', None))
+  title = urllib.unquote(form.getfirst('title', None))
+  uri = urllib.unquote(form.getfirst('uri', None))
   metadata = form.getfirst('metadata', None)
+  if metadata != None :
+    metadata = urllib.unquote(metadata)
   selection = form.getfirst('selection', None)
   type = form.getfirst('type', None)
   db_functions.updatedb_selection(selection, artist, title, uri, metadata, type)
