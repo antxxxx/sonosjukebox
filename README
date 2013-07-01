@@ -6,9 +6,9 @@ It is primarily designed to run on a raspberry pi and interface with a wallbox w
 To start it, all you need to do is run server.py from the installation directory. This starts a webserver listening on port 8000
 The data about the sonos system and the selections are held in an sqllit database called jukebox.db
 
-There are 2 pages used - admin.py which is used to update the database and sonos.py which starts the selected track playing on sonos
+There are 3 pages used - admin.py which is used to update the database, print_strips.py which prints title strips and sonos.py which starts the selected track playing on sonos
 
-The first time you run this, you should open a webpage at http://localhost:8000/admin.py which sets stuff up and can be used to change selections
+The first time you run this, you should open a webpage at http://localhost:8000/admin.py which sets up the database and can be used to change selections
 
 admin.py
 
@@ -57,29 +57,6 @@ The bits you need out of this are CurrentURI and CurrentURIMetaData. From the ex
 
 Paste the text from between the CurrentURI tags into the URI box and the text from between CurrentURIMetaData tags into the metadata box and select stream and click update
 
-For spotify tracks the one you want has this in it
-
-SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#AddURIToQueue"
-
-as for radio stations, select this and right click on it, select copy->bytes->printable text only and paste this into a text editor - it will be something like
-
-XS'hEQr]@*xi"G$P@)POST /MediaRenderer/AVTransport/Control HTTP/1.1
-CONNECTION: close
-ACCEPT-ENCODING: gzip
-HOST: 192.168.1.19:1400
-USER-AGENT: Linux UPnP/1.0 Sonos/22.0-64240 (WDCR:Microsoft Windows NT 6.1.7601 Service Pack 1)
-CONTENT-LENGTH: 1226
-CONTENT-TYPE: text/xml; charset="utf-8"
-SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#AddURIToQueue"
-
-<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:AddURIToQueue xmlns:u="urn:schemas-upnp-org:service:AVTransport:1"><InstanceID>0</InstanceID><EnqueuedURI>x-sonos-spotify:spotify%3atrack%3a7jwDuO7UZvWs77KNj9HbvF?sid=9&amp;flags=0</EnqueuedURI><EnqueuedURIMetaData>&lt;DIDL-Lite xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;00030000spotify%3atrack%3a7jwDuO7UZvWs77KNj9HbvF&quot; parentID=&quot;0004006cspotify%3aalbum%3a5jKMfS57mHTHzlSFGfPFxU&quot; restricted=&quot;true&quot;&gt;&lt;dc:title&gt;The Phoenix&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;desc id=&quot;cdudn&quot; nameSpace=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot;&gt;SA_RINCON2311_antxxxx&lt;/desc&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</EnqueuedURIMetaData><DesiredFirstTrackNumberEnqueued>0</DesiredFirstTrackNumberEnqueued><EnqueueAsNext>1</EnqueueAsNext></u:AddURIToQueue></s:Body></s:Envelope>
-
-From this, the bits you need out of this are EnqueuedURI and EnqueuedURIMetaData. From the example above these are
-
-<EnqueuedURI>x-sonos-spotify:spotify%3atrack%3a7jwDuO7UZvWs77KNj9HbvF?sid=9&amp;flags=0</EnqueuedURI>
-<EnqueuedURIMetaData>&lt;DIDL-Lite xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;00030000spotify%3atrack%3a7jwDuO7UZvWs77KNj9HbvF&quot; parentID=&quot;0004006cspotify%3aalbum%3a5jKMfS57mHTHzlSFGfPFxU&quot; restricted=&quot;true&quot;&gt;&lt;dc:title&gt;The Phoenix&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;desc id=&quot;cdudn&quot; nameSpace=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot;&gt;SA_RINCON2311_antxxxx&lt;/desc&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</EnqueuedURIMetaData>
-
-Paste the text from between the EnqueuedURI tags into the URI box and the text from between EnqueuedURIMetaData tags into the metadata box and select track and click update
 
 sons.py
 This is used to add a selection to the queue or start playing a radio station, or do some other sonos stuff
@@ -98,3 +75,6 @@ If action = enqueue then there should be another paramater called selection whic
 If the selection is a stream, then it starts playing the stream immediatly
 If the selection is a track, then if the sonos is stopped or playing a stream, then it starts playing the track immediatly.
 If the selection is a track and the sonos is already playing tracks, then it just adds it to the end of the queue
+
+print_strips.py
+This sends details to a php page hosted on another site called printstrips.php. Code for this can be found at https://github.com/antxxxx/printstrips
