@@ -30,6 +30,7 @@ def display_search_results(searchresults) :
   print "</tr>"
   
   didl=ET.fromstring(searchresults)[0][0].find('Result').text
+  didl=didl.encode('ascii', 'ignore')
   root=ET.fromstring(didl)
   for item in root.findall('{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}item'):
     uri=item.find('{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}res').text
