@@ -56,15 +56,25 @@ def display_jukebox_info():
   print "<th>selection</th>"
   print "<th>artist</th>"
   print "<th>title</th>"
+  print "<th></th>"
   print "</tr>"
   for row in jukebox_info:
       print "<tr>"
+      print "<form name='updatejukebox%s' action='print_strips.py' method='post'>" % (row["selection"])
       print "<td>%s</td>" % (row["selection"])
-      print "<td>%s</td>" % (row["artist"])
-      print "<td>%s</td>" % (row["title"])
+      print "<input type='hidden' name='selection' value=%s>" % (row["selection"])
+      print "<input type='hidden' name='action' value='update_selection'>" 
+      print "<td><textarea name='artist' rows=1 cols=20>%s</textarea></td>" % (row["artist"])
+      print "<td><textarea name='title' rows=1 cols=20>%s</textarea></td>" % (row["title"])
+      print "<input type='hidden' name='uri' value=%s>" % ( urllib.quote(row["uri"] or ''))
+      print "<input type='hidden' name='metadata' value=%s>" % (urllib.quote(row["metadata"] or ''))
+      print "<input type='hidden' name='type' value=%s>" % (row["type"])
+      print "<td><input type='submit' value='Update'></td>"
+      print "</form>"
       print "</tr>"
   print "</table>"
   print "</p>"
+
 
 def print_strips():
   jukebox_info = db_functions.get_jukebox_info()
@@ -102,5 +112,18 @@ def print_strips():
   
 print "Content-type: text/html"
 print
+form = cgi.FieldStorage() # instantiate only once!
+action = form.getfirst('action', None)
+if action == 'update_selection' :
+  selection = form.getfirst('selection', None)
+  artist = urllib.unquote(form.getfirst('artist', None))
+  title = urllib.unquote(form.getfirst('title', None))
+  uri = urllib.unquote(form.getfirst('uri', None))
+  metadata = form.getfirst('metadata', None)
+  if metadata != None :
+    metadata = urllib.unquote(metadata)
+  metadata=h.unescape(metadata)
+  type = form.getfirst('type', None)
+  db_functions.updatedb_selection(selection, artist, title, uri, metadata, type)
 print_strips()
 display_jukebox_info()

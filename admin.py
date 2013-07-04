@@ -35,7 +35,11 @@ def display_search_results(searchresults) :
     uri=item.find('{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}res').text
     artist=item.find('{http://purl.org/dc/elements/1.1/}creator').text
     title=item.find('{http://purl.org/dc/elements/1.1/}title').text
-    album=item.find('{urn:schemas-upnp-org:metadata-1-0/upnp/}album').text
+    album=item.find('{urn:schemas-upnp-org:metadata-1-0/upnp/}album')
+    if album != None :
+      album = album.text
+    else :
+      album = ''
     print "<tr>"
     print "<form name='addtrack' action='admin.py' method='post'>"
     print "<input type='hidden' name='action' value='add_track'>" 
@@ -197,9 +201,6 @@ def display_jukebox_info():
   print "<th>selection</th>"
   print "<th>artist</th>"
   print "<th>title</th>"
-  print "<th>uri</th>"
-  print "<th>metadata</th>"
-  print "<th>type</th>"
   print "<th></th>"
   print "</tr>"
   for row in jukebox_info:
@@ -208,18 +209,11 @@ def display_jukebox_info():
       print "<td>%s</td>" % (row["selection"])
       print "<input type='hidden' name='selection' value=%s>" % (row["selection"])
       print "<input type='hidden' name='action' value='update_selection'>" 
-      print "<td><textarea name='artist' rows=5 cols=20>%s</textarea></td>" % (row["artist"])
-      print "<td><textarea name='title' rows=5 cols=20>%s</textarea></td>" % (row["title"])
-      print "<td><textarea name='uri' rows=5 cols=20>%s</textarea></td>" % (row["uri"])
-      print "<td><textarea name='metadata' rows=5 cols=20>%s</textarea></td>" % (row["metadata"])
-      print "<td><input type='radio' name='type' value='stream' "
-      if row["type"] == "stream" :
-	print "checked"
-      print ">stream"
-      print "<input type='radio' name='type' value='track' "
-      if row["type"] == "track" :
-	print "checked"
-      print ">track</td>"
+      print "<td><textarea name='artist' rows=1 cols=20>%s</textarea></td>" % (row["artist"])
+      print "<td><textarea name='title' rows=1 cols=20>%s</textarea></td>" % (row["title"])
+      print "<input type='hidden' name='uri' value=%s>" % ( urllib.quote(row["uri"] or ''))
+      print "<input type='hidden' name='metadata' value=%s>" % (urllib.quote(row["metadata"] or ''))
+      print "<input type='hidden' name='type' value=%s>" % (row["type"])
       print "<td><input type='submit' value='Update'></td>"
       print "</form>"
       print "</tr>"
@@ -233,15 +227,14 @@ searchresults = None
 spotifysearchresults = None
 print "Content-type: text/html"
 print
+print "<html><head></head><body>"
 form = cgi.FieldStorage() # instantiate only once!
 action = form.getfirst('action', None)
 if action == 'update_selection' :
-  h = HTMLParser.HTMLParser()
   selection = form.getfirst('selection', None)
-  artist = urllib.unquoute(form.getfirst('artist', None))
-  title = urllib.unqoute(form.getfirst('title', None))
+  artist = urllib.unquote(form.getfirst('artist', None))
+  title = urllib.unquote(form.getfirst('title', None))
   uri = urllib.unquote(form.getfirst('uri', None))
-  uri=h.unescape(uri)
   metadata = form.getfirst('metadata', None)
   if metadata != None :
     metadata = urllib.unquote(metadata)
@@ -277,3 +270,4 @@ if (spotifysearchresults is not None) :
 display_sonos_info()
 display_favourites()
 display_jukebox_info()
+print "</body></html>"

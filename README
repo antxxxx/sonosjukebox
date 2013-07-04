@@ -16,46 +16,10 @@ This creates an sqllite database (if it does not exist) that will hold the infor
 You should change the ip address to match your sonos system and then click update
 You can also enter your spotify username here if you have a spotify account
 
-You can use the search box at the top to search for a track in your libraru (it only searches track titles) and assign it to a selection. This only searches your sonos library
+You can use the search box at the top to search for a track in your library (it only searches track titles) and assign it to a selection. This only searches your sonos library
 If you have a spotify account you can use the 2nd search box to search for a track in spotify and assign it
 
-You can also manually update selections to assign tracks from other sources (though this is a bit manual)
-
-To find the details for these kind of selections, you need to capture the traffic between a sonos controller and the sonos system.
-On windows this can be done using wireshark
-
-Start the sonos controller on windows and start wireshark. In wireshark, create a filter like this (setting the ip address to be the ip address of your sonos system)
-
- tcp.flags.push == 1 && ip.dst == 192.168.1.19
-
-then search for and start playing the radio stream or spotify track
-
-You will see a load of requests being captured in wireshark. 
-
-For radio stations/streams the one you want has this in it
-
-SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#SetAVTransportURI"
-
-select this and right click on it, select copy->bytes->printable text only and paste this into a text editor - it will be something like
-
-
-XS'hE1\@*x<5P@)POST /MediaRenderer/AVTransport/Control HTTP/1.1
-CONNECTION: close
-ACCEPT-ENCODING: gzip
-HOST: 192.168.1.19:1400
-USER-AGENT: Linux UPnP/1.0 Sonos/22.0-64240 (WDCR:Microsoft Windows NT 6.1.7601 Service Pack 1)
-CONTENT-LENGTH: 1021
-CONTENT-TYPE: text/xml; charset="utf-8"
-SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#SetAVTransportURI"
-
-<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:SetAVTransportURI xmlns:u="urn:schemas-upnp-org:service:AVTransport:1"><InstanceID>0</InstanceID><CurrentURI>x-sonosapi-stream:s44491?sid=254&amp;flags=32</CurrentURI><CurrentURIMetaData>&lt;DIDL-Lite xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;R:0/0/0&quot; parentID=&quot;R:0/0&quot; restricted=&quot;true&quot;&gt;&lt;dc:title&gt;BBC Radio 6 Music&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.audioBroadcast&lt;/upnp:class&gt;&lt;desc id=&quot;cdudn&quot; nameSpace=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot;&gt;SA_RINCON65031_&lt;/desc&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</CurrentURIMetaData></u:SetAVTransportURI></s:Body></s:Envelope>
-
-The bits you need out of this are CurrentURI and CurrentURIMetaData. From the example above these are
-
-<CurrentURI>x-sonosapi-stream:s44491?sid=254&amp;flags=32</CurrentURI>
-<CurrentURIMetaData>&lt;DIDL-Lite xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;R:0/0/0&quot; parentID=&quot;R:0/0&quot; restricted=&quot;true&quot;&gt;&lt;dc:title&gt;BBC Radio 6 Music&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.audioBroadcast&lt;/upnp:class&gt;&lt;desc id=&quot;cdudn&quot; nameSpace=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot;&gt;SA_RINCON65031_&lt;/desc&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</CurrentURIMetaData>
-
-Paste the text from between the CurrentURI tags into the URI box and the text from between CurrentURIMetaData tags into the metadata box and select stream and click update
+For other tracks, you can assign them to a favourite in sonos and add them from a favourite
 
 
 sons.py
