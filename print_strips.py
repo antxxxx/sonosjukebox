@@ -115,6 +115,7 @@ print
 form = cgi.FieldStorage() # instantiate only once!
 action = form.getfirst('action', None)
 if action == 'update_selection' :
+  h = HTMLParser.HTMLParser()
   selection = form.getfirst('selection', None)
   artist = urllib.unquote(form.getfirst('artist', None))
   title = urllib.unquote(form.getfirst('title', None))
